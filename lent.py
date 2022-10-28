@@ -1,7 +1,7 @@
 import re
 
-import requests  # работа с запросами, вытягиваем инфу с сайта
-from bs4 import BeautifulSoup  # делает свой объект и работает с ним
+import requests  # работа c запроcами, вытягиваем инфу c cайта
+from bs4 import BeautifulSoup  # делает cвой объект и работает c ним
 import pandas as pd
 
 URL1 = 'https://lenta.com/catalog/frukty-i-ovoshchi/'
@@ -36,11 +36,12 @@ COOKIES = {'..ASPXANONYMOUS': 'eqJYv_5OkBdmabkZugIbLlEbPiYLF5HqtXMMliG3yQt9csZ1n
                               'oxxfgh=bfc274ae-57e6-4d34-a3be-be2bb140d666#0#5184000000#5000#1800000#44965; '
                               'ValidationToken=e8461631c36e40b26a7f7876ab8de3b7; _ym_isad=2; '
                               '_gid=GA1.2.639453384.1666907551; IsAdult=True; '
-                              'ASP.NET_SessionId=kabdtq2zj5sblyxranopfi2m; ReviewedSkus=217386,300884,303639,364228,'
-                              '162743,574595,558630,168210,280267; _ym_visorc=b; tmr_detect=0%7C1666945592818; '
-                              'tmr_reqNum=143; '
-                              'qrator_jsr=1666947337.191.BXWPHSuftmu43QDK-bp3etl9bue6rdllfbvl7pibkssp0ren3-00; '
-                              'qrator_jsid=1666947337.191.BXWPHSuftmu43QDK-ltq3v14vf77tu7slhh1rrh9t8k6d5ghr'}
+                              'AddressTooltipInfo=Lenta.MainSite.Abstractions.Entities.Ecom.AddressTooltip; '
+                              '_ym_visorc=b; ReviewedSkus=300884,303639,364228,162743,574595,558630,168210,280267,'
+                              '515383,363352,103008,453565; ASP.NET_SessionId=4npyoivilwvq0sihunbymfkb; '
+                              'qrator_jsid=1666962115.131.bxf2ciP7fFtjNHVi-skokj3clsi8lodla14ubd6c2flklo805; '
+                              '_dc_gtm_UA-327775-27=1; _dc_gtm_UA-327775-35=1; _gat_UA-327775-1=1; '
+                              'tmr_detect=0%7C1666964348405; tmr_reqNum=217'}
 
 
 def get_html(url, params=''):
@@ -52,38 +53,32 @@ products = []
 
 
 def get_content(html):
-    for page in range(1, 2):
+    global c
+    c = ''
+    for page in range(1, 11):
         print(f'page {page}')
         soup = BeautifulSoup(html, 'lxml')
         title = soup.find_all('div', class_='sku-card-small-container')
-        print(title)
+
         for item in title:
             name = item.find('div', class_='sku-card-small-header__title').get_text(strip=True)
             if item.find('div', class_="sku-card-small__labels").find('div', class_='discount-label-small '
                                                                                     'discount-label-small--sku-card '
                                                                                     'sku-card-small__discount-label') \
                     is not None:
-                a = "Со скидкой"
+                a = "cо cкидкой"
             else:
-                a = 'Без скидки'
-            if item.find('span',
-                         class_='sku-card-small-weight-options__item') is None:
+                a = 'Без cкидки'
 
-                c = re.search('(?:[1-9]кг|[1-9][0-9]г|[1-9][0-9][0-9]г)', name)
-                if c == None:
-                    continue
-                else:
-                    name = re.sub('(?:, [1-9]кг|, [1-9][0-9]г|, [1-9][0-9][0-9]г)', '', name)
-                    c = c.group()
-                    c = re.sub('кг', ' кг', c)
-                    c = re.sub('г', ' г', c)
-
-            else:
-                c = item.find('div',
-                              class_='sku-card-small-weight-options__track').find('span',
-                                                                                  'sku-card-small-weight-options__item sku-card-small-weight-options__item--active').get_text(
-                    strip=True)
-
+            # if item.find('span',
+            #             class_='sku-card-small-weight-options__item') is None:
+            # if re.search('(?:\Sкг|\Sг|\Sл|\Sмл)', name) is not None:
+            #     c = 'за 1 шт.'
+            # elif item.find('span','sku-card-small-weight-options__item').get_text(strip=True) is not None:
+            #     c = item.find('span','sku-card-small-weight-options__item').get_text(strip=True)
+            #     #print(c)
+            if re.search('(?:весовой|весовая|весовые)',name):
+                c = 'за 1 кг'
             products.append(
                 {
                     'title': name,
@@ -100,7 +95,6 @@ def get_content(html):
     return products
 
 
-# for i in URL:
-html = get_html(URL1)
-# print(html)
-get_content(html.text)
+for i in URL:
+    html = get_html(i)
+    get_content(html.text)
