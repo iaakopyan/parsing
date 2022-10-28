@@ -1,6 +1,7 @@
 import requests  # работа с запросами, вытягиваем инфу с сайта
 from bs4 import BeautifulSoup  # делает свой объект и работает с ним
 import pandas as pd
+import re
 
 URL1 = 'https://online.globus.ru/catalog/ovoshchi-frukty-zelen/'
 URL2 = 'https://online.globus.ru/catalog/myaso-ptitsa-kolbasy/'
@@ -41,7 +42,7 @@ products = []
 
 
 def get_content(html):
-    for page in range(1, 20):
+    for page in range(1, 11):
         print(f'page {page}')
         soup = BeautifulSoup(html, 'lxml')
         title = soup.find_all('div', class_='catalog-section__item__body trans')
@@ -54,7 +55,7 @@ def get_content(html):
             products.append(
                 {
                     'title': item.find('span', class_='catalog-section__item__title').get_text(strip=True),
-                    'price': item.find('span', class_='item-price__num').get_text(separator='.', strip=True),
+                    'price': re.sub('.руб',' руб',item.find('span', class_='item-price__num').get_text(separator='.', strip=True)),
                     'weight': item.find('span',
                                         class_='item-price__additional item-price__additional--solo').get_text(
                         strip=True),
