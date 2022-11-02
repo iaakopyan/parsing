@@ -42,6 +42,7 @@ def get_pages_count(html):
 
 
 def get_content(html):
+
     products = []
     soup = BeautifulSoup(html, 'lxml')
     title = soup.find_all('div', class_='catalog-section__item__body trans')
@@ -52,13 +53,13 @@ def get_content(html):
             a = 'Без скидки'
         products.append(
             {
-                'title': item.find('span', class_='catalog-section__item__title').get_text(strip=True),
-                'price': re.sub('.руб',' руб',item.find('span', class_='item-price__num').get_text(separator='.', strip=True)),
-                'weight': item.find('span',
+                'Название': item.find('span', class_='catalog-section__item__title').get_text(strip=True),
+                'Цена': re.sub('руб.','руб',(re.sub('.руб',' руб',item.find('span', class_='item-price__num').get_text(separator='.', strip=True))).split('..')[0]),
+                'Граммовка': item.find('span',
                                     class_='item-price__additional item-price__additional--solo').get_text(
                     strip=True),
-                'link_category': HOST + item.find('a').get('href'),
-                'sale': a
+                'Ссылка': HOST + item.find('a').get('href'),
+                'Скидка': a
             }
         )
     print(products)
