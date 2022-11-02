@@ -34,14 +34,14 @@ COOKIES = {'..ASPXANONYMOUS': 'eqJYv_5OkBdmabkZugIbLlEbPiYLF5HqtXMMliG3yQt9csZ1n
                               '_tt_enable_cookie=1; _ttp=946a7cb9-a64b-4f9e-94a6-97b046716778; '
                               'flocktory-uuid=bcf94467-fbce-49ee-a211-0cd7902171e0-7; '
                               'oxxfgh=bfc274ae-57e6-4d34-a3be-be2bb140d666#0#5184000000#5000#1800000#44965; '
-                              'ValidationToken=e8461631c36e40b26a7f7876ab8de3b7; _ym_isad=2; '
-                              '_gid=GA1.2.639453384.1666907551; IsAdult=True; '
+                              'IsAdult=True; '
                               'AddressTooltipInfo=Lenta.MainSite.Abstractions.Entities.Ecom.AddressTooltip; '
-                              '_ym_visorc=b; ReviewedSkus=300884,303639,364228,162743,574595,558630,168210,280267,'
-                              '515383,363352,103008,453565; ASP.NET_SessionId=4npyoivilwvq0sihunbymfkb; '
-                              'qrator_jsid=1666962115.131.bxf2ciP7fFtjNHVi-skokj3clsi8lodla14ubd6c2flklo805; '
+                              'ReviewedSkus=303639,364228,162743,574595,558630,168210,280267,515383,363352,103008,'
+                              '453565,260969; ASP.NET_SessionId=q1m455bmfhlny3kclzhdobj1; _ym_isad=2; _ym_visorc=b; '
+                              '_gid=GA1.2.1095021276.1667398892; ValidationToken=e54c9793087a91a9994b18ae5e64915e; '
                               '_dc_gtm_UA-327775-27=1; _dc_gtm_UA-327775-35=1; _gat_UA-327775-1=1; '
-                              'tmr_detect=0%7C1666964348405; tmr_reqNum=217'}
+                              'qrator_jsid=1667398890.804.et9YKJbcFMCvoSVM-4t7ng1n5tvl56qqu08s8qdacqu2pff6c; '
+                              'tmr_detect=0%7C1667400076933; tmr_reqNum=263'}
 
 
 def get_html(url, params=''):
@@ -77,14 +77,23 @@ def get_content(html):
             # elif item.find('span','sku-card-small-weight-options__item').get_text(strip=True) is not None:
             #     c = item.find('span','sku-card-small-weight-options__item').get_text(strip=True)
             #     #print(c)
-            if re.search('(?:весовой|весовая|весовые)',name):
-                c = 'за 1 кг'
+
+            we = str(item.find('span',
+                               class_='sku-card-small-weight-options__item sku-card-small-weight-options__item--active'))
+            we = re.sub(
+                '<span class="sku-card-small-weight-options__item sku-card-small-weight-options__item--active">', '',
+                we)
+            we = re.sub('</span>', '', we)
+            we = re.sub('\r\n', '', we)
+            we=we.strip()
+            we = 'за ' + we
+            we = re.sub('None', '1 шт.', we)
             products.append(
                 {
                     'title': name,
                     'price': item.find('span', class_='price-label__integer').get_text(strip=True) + '.' + item.find(
                         'small', class_='price-label__fraction').get_text(strip=True) + ' руб.',
-                    'weight': c,
+                    'weight': we,
                     'link_category': HOST + item.find('a').get('href'),
                     'sale': a
                 }
