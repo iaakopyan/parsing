@@ -38,37 +38,37 @@ def get_pages_count(html):
     return len(pagination)-1
 
 
-products = []
+
 
 
 def get_content(html):
-    for page in range(1, 11):
-        print(f'page {page}')
-        soup = BeautifulSoup(html, 'lxml')
-        title = soup.find_all('div', class_='catalog-section__item__body trans')
-        print(title)
-        for item in title:
-            if item.find('span', class_="item-price__old") is not None:
-                a = "Со скидкой"
-            else:
-                a = 'Без скидки'
-            products.append(
-                {
-                    'title': item.find('span', class_='catalog-section__item__title').get_text(strip=True),
-                    'price': re.sub('.руб',' руб',item.find('span', class_='item-price__num').get_text(separator='.', strip=True)),
-                    'weight': item.find('span',
-                                        class_='item-price__additional item-price__additional--solo').get_text(
-                        strip=True),
-                    'link_category': HOST + item.find('a').get('href'),
-                    'sale': a
-                }
-            )
+    products = []
+    soup = BeautifulSoup(html, 'lxml')
+    title = soup.find_all('div', class_='catalog-section__item__body trans')
+    for item in title:
+        if item.find('span', class_="item-price__old") is not None:
+            a = "Со скидкой"
+        else:
+            a = 'Без скидки'
+        products.append(
+            {
+                'title': item.find('span', class_='catalog-section__item__title').get_text(strip=True),
+                'price': re.sub('.руб',' руб',item.find('span', class_='item-price__num').get_text(separator='.', strip=True)),
+                'weight': item.find('span',
+                                    class_='item-price__additional item-price__additional--solo').get_text(
+                    strip=True),
+                'link_category': HOST + item.find('a').get('href'),
+                'sale': a
+            }
+        )
     print(products)
     df = pd.DataFrame(products)
-    df.to_csv("globus.csv")
+    df.to_csv("globus.csv",  mode='a')
     return products
 
 
 for i in URL:
-    html = get_html(i)
-    get_content(html.text)
+    for page in range(1, 11):
+        html = get_html(i+f'?PAGEN_1={page}')
+        print(i+f'?page={page}')
+        get_content(html.text)
