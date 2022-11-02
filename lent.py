@@ -36,12 +36,13 @@ COOKIES = {'..ASPXANONYMOUS': 'eqJYv_5OkBdmabkZugIbLlEbPiYLF5HqtXMMliG3yQt9csZ1n
                               'oxxfgh=bfc274ae-57e6-4d34-a3be-be2bb140d666#0#5184000000#5000#1800000#44965; '
                               'IsAdult=True; '
                               'AddressTooltipInfo=Lenta.MainSite.Abstractions.Entities.Ecom.AddressTooltip; '
-                              'ReviewedSkus=303639,364228,162743,574595,558630,168210,280267,515383,363352,103008,'
-                              '453565,260969; ASP.NET_SessionId=q1m455bmfhlny3kclzhdobj1; _ym_isad=2; _ym_visorc=b; '
-                              '_gid=GA1.2.1095021276.1667398892; ValidationToken=e54c9793087a91a9994b18ae5e64915e; '
-                              '_dc_gtm_UA-327775-27=1; _dc_gtm_UA-327775-35=1; _gat_UA-327775-1=1; '
-                              'qrator_jsid=1667398890.804.et9YKJbcFMCvoSVM-4t7ng1n5tvl56qqu08s8qdacqu2pff6c; '
-                              'tmr_detect=0%7C1667400076933; tmr_reqNum=263'}
+                              '_ym_isad=2; _gid=GA1.2.1095021276.1667398892; '
+                              'ValidationToken=e54c9793087a91a9994b18ae5e64915e; '
+                              'ASP.NET_SessionId=x0o4o231p3gaw2yn2f5tmg3f; _ym_visorc=b; '
+                              'qrator_jsid=1667407343.702.cawIV7hiJXwiQrnF-193ncb3q9v1p94cge9qscj1jv6a6vdsq; '
+                              'ReviewedSkus=162743,574595,558630,168210,280267,515383,363352,103008,453565,260969,'
+                              '547550,123264; '
+                              '_hjSessionUser_3225473=eyJpZCI6IjA0ZThlZjc3LWJkN2QtNTllNi04Mjg1LTNiYjUwZmYxM2Y2OSIsImNyZWF0ZWQiOjE2Njc0MDc1NzQ0MDcsImV4aXN0aW5nIjpmYWxzZX0=; _hjFirstSeen=1; _hjIncludedInSessionSample=0; _hjSession_3225473=eyJpZCI6IjczOGIzODJjLWIxMTktNGE2NS1iNjc4LWQ1OTYyZDBmMTEzMSIsImNyZWF0ZWQiOjE2Njc0MDc1NzQ0MzMsImluU2FtcGxlIjpmYWxzZX0=; _hjAbsoluteSessionInProgress=0; _dc_gtm_UA-327775-27=1; _dc_gtm_UA-327775-35=1; _gat_UA-327775-1=1; tmr_detect=0%7C1667407900114; tmr_reqNum=283'}
 
 
 def get_html(url, params=''):
@@ -61,33 +62,21 @@ def get_content(html):
         title = soup.find_all('div', class_='sku-card-small-container')
 
         for item in title:
+
             name = item.find('div', class_='sku-card-small-header__title').get_text(strip=True)
             if item.find('div', class_="sku-card-small__labels").find('div', class_='discount-label-small '
                                                                                     'discount-label-small--sku-card '
-                                                                                    'sku-card-small__discount-label') \
-                    is not None:
-                a = "cо cкидкой"
+                                                                                    'sku-card-small__discount-label') is not None:
+
+                a = "Со cкидкой"
             else:
                 a = 'Без cкидки'
 
-            # if item.find('span',
-            #             class_='sku-card-small-weight-options__item') is None:
-            # if re.search('(?:\Sкг|\Sг|\Sл|\Sмл)', name) is not None:
-            #     c = 'за 1 шт.'
-            # elif item.find('span','sku-card-small-weight-options__item').get_text(strip=True) is not None:
-            #     c = item.find('span','sku-card-small-weight-options__item').get_text(strip=True)
-            #     #print(c)
-
-            we = str(item.find('span',
-                               class_='sku-card-small-weight-options__item sku-card-small-weight-options__item--active'))
-            we = re.sub(
-                '<span class="sku-card-small-weight-options__item sku-card-small-weight-options__item--active">', '',
-                we)
-            we = re.sub('</span>', '', we)
-            we = re.sub('\r\n', '', we)
-            we=we.strip()
-            we = 'за ' + we
-            we = re.sub('None', '1 шт.', we)
+            we = item.find('span', class_='sku-card-small-weight-options__item sku-card-small-weight-options__item--active')
+            if we is None:
+                we = "за 1 шт."
+            else:
+                we = "за 1 кг"
             products.append(
                 {
                     'title': name,
